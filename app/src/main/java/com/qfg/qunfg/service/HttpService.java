@@ -28,15 +28,27 @@ public class HttpService {
         String content = "";
         URL httpUrl = new URL(baseUrl + url);
         // HttpURLConnection
-        HttpURLConnection httpConn = (HttpURLConnection) httpUrl.openConnection();
-        httpConn.connect();
-        if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            InputStream is = httpConn.getInputStream();
-            content = Utils.convertStreamToString(is);
-            is.close();
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection) httpUrl.openConnection();
+
+            httpConn.connect();
+            if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream is = httpConn.getInputStream();
+                content = Utils.convertStreamToString(is);
+                is.close();
+            } else {
+                throw new Exception(String.format("responseCode:%d,%s", httpConn.getResponseCode(), httpConn.getResponseMessage()));
+            }
+         } catch (Exception e) {
+            throw e;
+        } finally {
+            //disconnect
+            if (null != httpConn) {
+                httpConn.disconnect();
+            }
         }
-        //disconnect
-        httpConn.disconnect();
+
         return content;
     }
 
@@ -44,23 +56,33 @@ public class HttpService {
         String content = "";
         URL httpUrl = new URL(baseUrl + url);
         // HttpURLConnection
-        HttpURLConnection httpConn = (HttpURLConnection) httpUrl.openConnection();
-        httpConn.setRequestMethod("POST");
-        httpConn.setDoOutput(true);
-        httpConn.setDoInput(true);
-        httpConn.setRequestProperty("Content-Type", "application/json");
-        OutputStream outStream = httpConn.getOutputStream();
-        outStream.write(param.getBytes("UTF-8"));
-        outStream.flush();
-        outStream.close();
+        HttpURLConnection httpConn = null;
+        try {
+            httpConn = (HttpURLConnection) httpUrl.openConnection();
+            httpConn.setRequestMethod("POST");
+            httpConn.setDoOutput(true);
+            httpConn.setDoInput(true);
+            httpConn.setRequestProperty("Content-Type", "application/json");
+            OutputStream outStream = httpConn.getOutputStream();
+            outStream.write(param.getBytes("UTF-8"));
+            outStream.flush();
+            outStream.close();
 
-        if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
-            InputStream is = httpConn.getInputStream();
-            content = Utils.convertStreamToString(is);
-            is.close();
+            if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
+                InputStream is = httpConn.getInputStream();
+                content = Utils.convertStreamToString(is);
+                is.close();
+            } else {
+                throw new Exception(String.format("responseCode:%d,%s", httpConn.getResponseCode(), httpConn.getResponseMessage()));
+            }
+        } catch (Exception e) {
+            throw e;
+        } finally {
+            //disconnect
+            if (null != httpConn) {
+                httpConn.disconnect();
+            }
         }
-        //disconnect
-        httpConn.disconnect();
         return content;
     }
 }

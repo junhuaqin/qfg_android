@@ -49,7 +49,6 @@ public class StoresActivity extends AppCompatActivity {
         bottomBar.setItems(R.menu.bottom_navagation);
         bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorBlue));
         bottomBar.selectTabAtPosition(1, true);
-
         bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
             @Override
             public void onMenuTabSelected(@IdRes int itemId) {
@@ -79,6 +78,7 @@ public class StoresActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        bottomBar.selectTabAtPosition(1, true);
         if (productArrayAdapter.getCount() == 0) {
             refreshStore();
         }

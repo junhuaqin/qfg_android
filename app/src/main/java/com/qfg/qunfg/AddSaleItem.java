@@ -108,21 +108,28 @@ public class AddSaleItem extends AppCompatActivity implements AdapterView.OnItem
 
     private boolean validate() {
         CoordinatorLayout layout = (CoordinatorLayout) findViewById(R.id.addSaleItem);
+
         if (isEmpty(barCode)) {
             String strBC = getResources().getString(R.string.barCode);
+//            barCode.setError(getResources().getString(R.string.nullNotAllowed, strBC));
             Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strBC), Snackbar.LENGTH_LONG).show();
             return false;
         } else if (isEmpty(title)) {
             String strTitle = getResources().getString(R.string.itemTitle);
+//            title.setError(getResources().getString(R.string.nullNotAllowed, strTitle));
             Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strTitle), Snackbar.LENGTH_LONG).show();
             return false;
-        } else if (isEmpty(unitPrice)) {
+        } else if (isEmpty(unitPrice) || Formatter.currency2bg(Float.valueOf(unitPrice.getText().toString())) <= 0) {
             String strUP = getResources().getString(R.string.unitPrice);
-            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strUP), Snackbar.LENGTH_LONG).show();
+            unitPrice.setError(getResources().getString(R.string.nullNotAllowed, strUP));
+            unitPrice.requestFocus();
+//            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strUP), Snackbar.LENGTH_LONG).show();
             return false;
-        } else if (isEmpty(amount)) {
+        } else if (isEmpty(amount) || Integer.valueOf(amount.getText().toString()) <= 0) {
             String strAmount = getResources().getString(R.string.amount);
-            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strAmount), Snackbar.LENGTH_LONG).show();
+            amount.setError(getResources().getString(R.string.nullNotAllowed, strAmount));
+            amount.requestFocus();
+//            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strAmount), Snackbar.LENGTH_LONG).show();
             return false;
         }
 

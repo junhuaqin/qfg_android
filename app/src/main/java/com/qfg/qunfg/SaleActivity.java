@@ -63,17 +63,21 @@ public class SaleActivity extends AppCompatActivity {
 
         bottomBar = BottomBar.attach(this, savedInstanceState);
         bottomBar.setItems(R.menu.bottom_navagation);
+        bottomBar.selectTabAtPosition(0, true);
         bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
             @Override
             public void onMenuTabSelected(@IdRes int itemId) {
+                Intent intent = null;
                 switch (itemId) {
                     case R.id.sale_item:
                         break;
                     case R.id.store_item:
-                        Intent intent = new Intent(SaleActivity.this, StoresActivity.class);
+                        intent = new Intent(SaleActivity.this, StoresActivity.class);
                         startActivity(intent);
                         break;
                     case R.id.my_item:
+                        intent = new Intent(SaleActivity.this, LoginActivity.class);
+                        startActivity(intent);
 //                        Snackbar.make(layout, "Location Item Selected", Snackbar.LENGTH_LONG).show();
                         break;
                 }
@@ -116,6 +120,7 @@ public class SaleActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        bottomBar.selectTabAtPosition(0, true);
         mAdapter.setData(SaleItemService.getInstance().getAll());
         mAdapter.notifyDataSetChanged();
         submit.setEnabled(mAdapter.getItemCount()>0);
