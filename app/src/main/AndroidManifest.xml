@@ -18,12 +18,21 @@
             </intent-filter>
         </activity>
         <activity android:name=".AddSaleItem"
-            android:theme="@style/Theme.AppCompat.DayNight.NoActionBar"
             android:label="@string/productInfo"
             android:parentActivityName=".SaleActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SaleActivity" />
+        </activity>
+        <activity android:name=".OrdersActivity"
+            android:label="@string/orders"
+            android:parentActivityName=".SaleActivity">
+            <meta-data
+                android:name="android.support.PARENT_ACTIVITY"
+                android:value=".SaleActivity" />
+        </activity>
+        <activity android:name=".StoresActivity">
+
         </activity>
     </application>
 

@@ -27,6 +27,8 @@ import com.qfg.qunfg.util.Utils;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnMenuTabClickListener;
 
+import java.lang.ref.WeakReference;
+
 public class SaleActivity extends AppCompatActivity {
 
     private static int pick_sale_item = 1;
@@ -39,6 +41,12 @@ public class SaleActivity extends AppCompatActivity {
     private Button submit;
     private CoordinatorLayout layout;
     private ProgressBar progressBar;
+    private ProgressBar staticsPB;
+    private TextView curMon;
+    private TextView curDay;
+    private TextView showOrders;
+
+    private WeakReference<RefreshStatics> refreshStaticsReference;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +55,11 @@ public class SaleActivity extends AppCompatActivity {
         totalPrice = (TextView) findViewById(R.id.total_price);
         submit = (Button) findViewById(R.id.submit);
         progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        staticsPB = (ProgressBar) findViewById(R.id.staticsProgressBar);
         layout = (CoordinatorLayout) findViewById(R.id.sale_tab);
+        curMon = (TextView) findViewById(R.id.curMon);
+        curDay = (TextView) findViewById(R.id.curDay);
+        showOrders = (TextView) findViewById(R.id.showOrders);
 
         bottomBar = BottomBar.attach(this, savedInstanceState);
         bottomBar.setItems(R.menu.bottom_navagation);
@@ -56,13 +68,13 @@ public class SaleActivity extends AppCompatActivity {
             public void onMenuTabSelected(@IdRes int itemId) {
                 switch (itemId) {
                     case R.id.sale_item:
-                        Snackbar.make(layout, "Recent Item Selected", Snackbar.LENGTH_LONG).show();
                         break;
                     case R.id.store_item:
-                        Snackbar.make(layout, "Favorite Item Selected", Snackbar.LENGTH_LONG).show();
+                        Intent intent = new Intent(SaleActivity.this, StoresActivity.class);
+                        startActivity(intent);
                         break;
                     case R.id.my_item:
-                        Snackbar.make(layout, "Location Item Selected", Snackbar.LENGTH_LONG).show();
+//                        Snackbar.make(layout, "Location Item Selected", Snackbar.LENGTH_LONG).show();
                         break;
                 }
             }
@@ -89,6 +101,18 @@ public class SaleActivity extends AppCompatActivity {
         mRecyclerView.setAdapter(mAdapter);
     }
 
+    private void refreshStatic() {
+        if (null == refreshStaticsReference || null == refreshStaticsReference.get()) {
+            if (!HttpService.isOnline(this)) {
+                Snackbar.make(layout, getResources().getString(R.string.notConnectInternet), Snackbar.LENGTH_LONG).show();
+                return;
+            }
+
+            RefreshStatics statics = new RefreshStatics();
+            refreshStaticsReference = new WeakReference<>(statics);
+            statics.execute();
+        }
+    }
     @Override
     protected void onResume() {
         super.onResume();
@@ -98,6 +122,7 @@ public class SaleActivity extends AppCompatActivity {
 
         totalPrice.setText(getResources().getString(R.string.totalPrice,
                 Formatter.formatCurrency(Formatter.currency2fg(SaleItemService.getInstance().getTotalPrice()))));
+        refreshStatic();
     }
 
     @Override
@@ -154,6 +179,11 @@ public class SaleActivity extends AppCompatActivity {
         clearSaleItems();
     }
 
+    public void onShowOrders(View view) {
+        Intent intent = new Intent(this, OrdersActivity.class);
+        startActivity(intent);
+    }
+
     private class SubmitSale extends AsyncTask<Order, Void, Message> {
         @Override
         protected void onPreExecute() {
@@ -187,9 +217,58 @@ public class SaleActivity extends AppCompatActivity {
             if (Constants.SUCCESS == s.what) {
                 Snackbar.make(layout, getResources().getString(R.string.submitSuccess), Snackbar.LENGTH_LONG).show();
                 clearSaleItems();
+                refreshStatic();
             } else {
                 Snackbar.make(layout, (String)s.obj, Snackbar.LENGTH_LONG).show();
             }
+        }
+    }
+
+    private class RefreshStatics extends AsyncTask<Void, Void, Message> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            curMon.setVisibility(View.GONE);
+            curDay.setVisibility(View.GONE);
+            showOrders.setVisibility(View.GONE);
+            staticsPB.setVisibility(View.VISIBLE);
+        }
+
+        @Override
+        protected Message doInBackground(Void... orders) {
+            Message msg = new Message();
+
+            try {
+                String result = HttpService.get("/orders/statics");
+                Gson gson = new Gson();
+                msg.what = Constants.SUCCESS;
+                msg.obj = gson.fromJson(result, Order.Statics.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg.what = Constants.FAILED;
+                msg.obj = Utils.convertExceptionToString(e);
+            }
+
+            return msg;
+        }
+
+        @Override
+        protected void onPostExecute(Message s) {
+            super.onPostExecute(s);
+
+            if (Constants.SUCCESS == s.what) {
+                Order.Statics statics = (Order.Statics)s.obj;
+                curMon.setText(Formatter.formatCurrency(Formatter.currency2fg(statics.getCurMonth())));
+                curDay.setText(getResources().getString(R.string.curDayTotalSale,
+                               Formatter.formatCurrency(Formatter.currency2fg(statics.getCurDay()))));
+            } else {
+                Snackbar.make(layout, (String)s.obj, Snackbar.LENGTH_LONG).show();
+            }
+
+            staticsPB.setVisibility(View.GONE);
+            curMon.setVisibility(View.VISIBLE);
+            curDay.setVisibility(View.VISIBLE);
+            showOrders.setVisibility(View.VISIBLE);
         }
     }
 }

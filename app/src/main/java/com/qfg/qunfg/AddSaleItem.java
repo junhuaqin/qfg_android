@@ -6,8 +6,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
+import android.support.design.widget.CoordinatorLayout;
+import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -46,15 +47,17 @@ public class AddSaleItem extends AppCompatActivity implements AdapterView.OnItem
         super.onCreate(savedInstanceState);
         setContentView(R.layout.add_sale_item);
 
-        setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+//        setSupportActionBar((Toolbar) findViewById(R.id.my_toolbar));
+        if (null != getSupportActionBar()) {
+            getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        }
 
         barCode = (TextView) findViewById(R.id.barCode);
         title = (TextView) findViewById(R.id.itemTitle);
         unitPrice = (TextView) findViewById(R.id.itemUnitPrice);
         amount = (TextView) findViewById(R.id.itemAmount);
 
-        adapter = new ArrayAdapter<>(this, android.R.layout.simple_gallery_item);
+        adapter = new ArrayAdapter<>(this, android.R.layout.select_dialog_item);
         AutoCompleteTextView productList = (AutoCompleteTextView) findViewById(R.id.productList);
 
         productList.setAdapter(adapter);
@@ -84,8 +87,11 @@ public class AddSaleItem extends AppCompatActivity implements AdapterView.OnItem
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
-            case R.id.action_favorite:
-                onOK();
+            case R.id.action_done:
+                if (validate()) {
+                    onOK();
+                }
+
                 return true;
 
             default:
@@ -94,6 +100,34 @@ public class AddSaleItem extends AppCompatActivity implements AdapterView.OnItem
                 return super.onOptionsItemSelected(item);
 
         }
+    }
+
+    private boolean isEmpty(TextView view) {
+        return view.getText().toString().isEmpty();
+    }
+
+    private boolean validate() {
+        CoordinatorLayout layout = (CoordinatorLayout) findViewById(R.id.addSaleItem);
+        if (isEmpty(barCode)) {
+            String strBC = getResources().getString(R.string.barCode);
+            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strBC), Snackbar.LENGTH_LONG).show();
+            return false;
+        } else if (isEmpty(title)) {
+            String strTitle = getResources().getString(R.string.itemTitle);
+            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strTitle), Snackbar.LENGTH_LONG).show();
+            return false;
+        } else if (isEmpty(unitPrice)) {
+            String strUP = getResources().getString(R.string.unitPrice);
+            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strUP), Snackbar.LENGTH_LONG).show();
+            return false;
+        } else if (isEmpty(amount)) {
+            String strAmount = getResources().getString(R.string.amount);
+            Snackbar.make(layout, getResources().getString(R.string.nullNotAllowed, strAmount), Snackbar.LENGTH_LONG).show();
+            return false;
+        }
+
+
+        return true;
     }
 
     private void onOK() {

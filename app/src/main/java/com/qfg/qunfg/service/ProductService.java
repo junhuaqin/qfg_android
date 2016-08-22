@@ -57,6 +57,14 @@ public class ProductService extends BaseService {
         }
     }
 
+    public List<Product> getAll() {
+        return products;
+    }
+
+    public void setAll(List<Product> products) {
+        this.products = products;
+    }
+
     public Product getByBarCode(Integer barCode) {
         for (Product product : products) {
             if (barCode.equals(product.getBarCode())) {

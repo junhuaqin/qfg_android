@@ -3,7 +3,7 @@ package com.qfg.qunfg.pojo;
 /**
  * Created by rbtq on 8/17/16.
  */
-public class Product implements KeyValuePOJO {
+public class Product{
     private int barCode;
     private String title;
     private int unitPrice;
@@ -46,17 +46,7 @@ public class Product implements KeyValuePOJO {
     }
 
     @Override
-    public String getKey() {
-        return String.format("%d-%s", barCode, title);
-    }
-
-    @Override
-    public String getValue() {
-        return String.format("%d", barCode);
-    }
-
-    @Override
     public String toString() {
-        return getKey();
+        return String.format("%d-%s", getBarCode(), getTitle());
     }
 }

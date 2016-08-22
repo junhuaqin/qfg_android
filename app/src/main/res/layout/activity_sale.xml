@@ -2,7 +2,6 @@
 
 <android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    xmlns:card_view="http://schemas.android.com/apk/res-auto"
     android:id="@+id/sale_tab"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
@@ -14,28 +13,56 @@
         <android.support.v7.widget.AppCompatTextView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="本月销售额"
+            android:text="@string/curMonTotalSale"
             android:textColor="@android:color/white"
             android:gravity="center"
             android:background="@color/colorBlue"/>
-        <android.support.v7.widget.AppCompatTextView
+        <ProgressBar
+            android:id="@+id/staticsProgressBar"
+            style="?android:attr/progressBarStyleSmall"
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:indeterminate="true"
+            android:background="@color/colorBlue"
+            android:visibility="gone"/>
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:background="@color/colorBlue">
+        <TextView
+            android:id="@+id/curMon"
+            android:layout_width="0dp"
+            android:layout_weight="9"
+            android:layout_height="wrap_content"
+            android:gravity="center"
             android:freezesText="true"
             android:text="123,100.00"
-            android:textSize="30dp"
+            android:textSize="30sp"
             android:textColor="@android:color/white"
-            android:gravity="center"
-            android:background="@color/colorBlue"/>
-        <android.support.v7.widget.AppCompatTextView
+            android:onClick="onShowOrders"/>
+            <TextView
+                android:id="@+id/showOrders"
+                android:layout_width="0dp"
+                android:layout_weight="1"
+                android:layout_height="wrap_content"
+                android:text=">"
+                android:textSize="30sp"
+                android:textColor="@android:color/white"
+                android:gravity="center"
+                android:onClick="onShowOrders"/>
+        </LinearLayout>
+        <TextView
+            android:id="@+id/curDay"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="今日销售额:1,100.00"
+            android:paddingEnd="4dp"
+            android:paddingRight="4dp"
+            android:text="1,100.00"
             android:freezesText="true"
             android:textColor="@android:color/white"
             android:gravity="center_vertical|right"
-            android:background="@color/colorBlue"
-            android:elevation="5dp" />
+            android:background="@color/colorBlue"/>
         <android.support.v7.widget.ButtonBarLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
@@ -69,6 +96,8 @@
             android:layout_weight="1"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
+            android:paddingLeft="4dp"
+            android:paddingRight="4dp"
             android:background="@android:color/white"/>
         <ProgressBar
             android:id="@+id/progressBar"

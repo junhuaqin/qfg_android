@@ -2,7 +2,8 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto">
     <item
-        android:id="@+id/action_done"
-        android:title="@string/action_done"
+        android:id="@+id/action_pick"
+        android:icon="@drawable/ic_update_white_24dp"
+        android:title="@string/goTo"
         app:showAsAction="ifRoom"/>
 </menu>

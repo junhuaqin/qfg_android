@@ -16,6 +16,10 @@ public class Formatter {
         return money/100.f;
     }
 
+    public static float currency2fg(long money) {
+        return money/100.f;
+    }
+
     public static int currency2bg(float money) {
         return (int)(money*100);
     }

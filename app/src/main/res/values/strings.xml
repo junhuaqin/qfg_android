@@ -11,6 +11,7 @@
     <string name="unitPrice">单价</string>
     <string name="amount">数量</string>
     <string name="productInfo">产品信息</string>
+    <string name="orders">订单</string>
     <string name="submit">提交</string>
     <string name="ok">确定</string>
     <string name="cancel">取消</string>
@@ -19,4 +20,8 @@
     <string name="submitSuccess">提交成功</string>
     <string name="submitFailed">提交失败:</string>
     <string name="notConnectInternet">未连接网络</string>
+    <string name="nullNotAllowed">请输入%1$s</string>
+    <string name="curMonTotalSale">本月销售额</string>
+    <string name="curDayTotalSale">今日销售额:%1$s</string>
+    <string name="goTo">转到</string>
 </resources>

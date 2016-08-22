@@ -13,4 +13,7 @@ public class Constants {
     public final static int STRING = 4;
     public final static int SUCCESS = 5;
     public final static int FAILED = 6;
+
+    public final static int LIST_OF_ORDER = 7;
+    public final static int SALE_STATICS = 8;
 }
