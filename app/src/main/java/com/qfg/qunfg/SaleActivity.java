@@ -4,10 +4,8 @@ import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.annotation.IdRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -20,12 +18,11 @@ import com.google.gson.Gson;
 import com.qfg.qunfg.pojo.Order;
 import com.qfg.qunfg.pojo.SaleItem;
 import com.qfg.qunfg.service.HttpService;
+import com.qfg.qunfg.service.LoginService;
 import com.qfg.qunfg.service.SaleItemService;
 import com.qfg.qunfg.util.Constants;
 import com.qfg.qunfg.util.Formatter;
 import com.qfg.qunfg.util.Utils;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabClickListener;
 
 import java.lang.ref.WeakReference;
 
@@ -36,7 +33,7 @@ public class SaleActivity extends AppCompatActivity {
     private RecyclerView mRecyclerView;
     private KeyValueAdapter mAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
-    private BottomBar bottomBar;
+    private CustomBottomBar bottomBar;
     private TextView totalPrice;
     private Button submit;
     private CoordinatorLayout layout;
@@ -61,35 +58,7 @@ public class SaleActivity extends AppCompatActivity {
         curDay = (TextView) findViewById(R.id.curDay);
         showOrders = (TextView) findViewById(R.id.showOrders);
 
-        bottomBar = BottomBar.attach(this, savedInstanceState);
-        bottomBar.setItems(R.menu.bottom_navagation);
-        bottomBar.selectTabAtPosition(0, true);
-        bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
-            @Override
-            public void onMenuTabSelected(@IdRes int itemId) {
-                Intent intent = null;
-                switch (itemId) {
-                    case R.id.sale_item:
-                        break;
-                    case R.id.store_item:
-                        intent = new Intent(SaleActivity.this, StoresActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.my_item:
-                        intent = new Intent(SaleActivity.this, LoginActivity.class);
-                        startActivity(intent);
-//                        Snackbar.make(layout, "Location Item Selected", Snackbar.LENGTH_LONG).show();
-                        break;
-                }
-            }
-
-            @Override
-            public void onMenuTabReSelected(@IdRes int menuItemId) {
-
-            }
-        });
-
-        bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorBlue));
+        bottomBar = new CustomBottomBar(0, this, savedInstanceState);
 
         mRecyclerView = (RecyclerView) findViewById(R.id.my_recycler_view);
 
@@ -103,6 +72,11 @@ public class SaleActivity extends AppCompatActivity {
 
         mAdapter = new KeyValueAdapter();
         mRecyclerView.setAdapter(mAdapter);
+    }
+
+    private void gotoLogin() {
+        Intent intent = new Intent(SaleActivity.this, LoginActivity.class);
+        startActivity(intent);
     }
 
     private void refreshStatic() {
@@ -120,14 +94,18 @@ public class SaleActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        bottomBar.selectTabAtPosition(0, true);
-        mAdapter.setData(SaleItemService.getInstance().getAll());
-        mAdapter.notifyDataSetChanged();
-        submit.setEnabled(mAdapter.getItemCount()>0);
+        if (!LoginService.isLoggedIn(getApplicationContext())) {
+            gotoLogin();
+        } else {
+            bottomBar.selectTab();
+            mAdapter.setData(SaleItemService.getInstance().getAll());
+            mAdapter.notifyDataSetChanged();
+            submit.setEnabled(mAdapter.getItemCount() > 0);
 
-        totalPrice.setText(getResources().getString(R.string.totalPrice,
-                Formatter.formatCurrency(Formatter.currency2fg(SaleItemService.getInstance().getTotalPrice()))));
-        refreshStatic();
+            totalPrice.setText(getResources().getString(R.string.totalPrice,
+                    Formatter.formatCurrency(Formatter.currency2fg(SaleItemService.getInstance().getTotalPrice()))));
+            refreshStatic();
+        }
     }
 
     @Override

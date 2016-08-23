@@ -2,14 +2,14 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/sale_item"
-        android:icon="@drawable/ic_update_white_24dp"
+        android:icon="@drawable/ic_sale"
         android:title="@string/sale" />
     <item
         android:id="@+id/store_item"
-        android:icon="@drawable/ic_location_on_white_24dp"
+        android:icon="@drawable/ic_store"
         android:title="@string/store" />
     <item
         android:id="@+id/my_item"
-        android:icon="@drawable/ic_favorite_white_24dp"
+        android:icon="@drawable/ic_account"
         android:title="@string/account" />
 </menu>

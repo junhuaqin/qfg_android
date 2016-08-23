@@ -4,6 +4,7 @@ import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 
+import com.qfg.qunfg.util.Constants;
 import com.qfg.qunfg.util.Utils;
 
 import java.io.InputStream;
@@ -31,6 +32,7 @@ public class HttpService {
         HttpURLConnection httpConn = null;
         try {
             httpConn = (HttpURLConnection) httpUrl.openConnection();
+            setAuth(httpConn);
 
             httpConn.connect();
             if (httpConn.getResponseCode() == HttpURLConnection.HTTP_OK) {
@@ -52,6 +54,10 @@ public class HttpService {
         return content;
     }
 
+    protected static void setAuth(HttpURLConnection httpConn) {
+        httpConn.setRequestProperty(Constants.AUTH, String.format("%s:%s", LoginService.getLoggedInUserName(), LoginService.getLoggedInToken()));
+    }
+
     public static String post(String url, String param) throws Exception {
         String content = "";
         URL httpUrl = new URL(baseUrl + url);
@@ -63,6 +69,7 @@ public class HttpService {
             httpConn.setDoOutput(true);
             httpConn.setDoInput(true);
             httpConn.setRequestProperty("Content-Type", "application/json");
+            setAuth(httpConn);
             OutputStream outStream = httpConn.getOutputStream();
             outStream.write(param.getBytes("UTF-8"));
             outStream.flush();

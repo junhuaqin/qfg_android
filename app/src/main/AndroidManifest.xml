@@ -39,10 +39,11 @@
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value=".SaleActivity" />
         </activity>
-        <activity android:name=".StoresActivity"></activity>
+        <activity android:name=".StoresActivity" />
         <activity
             android:name=".LoginActivity"
-            android:label="@string/title_activity_login"></activity>
+            android:label="@string/title_activity_login" />
+        <activity android:name=".MineActivity"></activity>
     </application>
 
 </manifest>

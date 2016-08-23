@@ -16,4 +16,6 @@ public class Constants {
 
     public final static int LIST_OF_ORDER = 7;
     public final static int SALE_STATICS = 8;
+
+    public final static String AUTH = "Authorization";
 }

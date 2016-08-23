@@ -1,13 +1,10 @@
 package com.qfg.qunfg;
 
-import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
-import android.support.annotation.IdRes;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.Snackbar;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ListView;
@@ -20,8 +17,6 @@ import com.qfg.qunfg.service.HttpService;
 import com.qfg.qunfg.service.ProductService;
 import com.qfg.qunfg.util.Constants;
 import com.qfg.qunfg.util.Utils;
-import com.roughike.bottombar.BottomBar;
-import com.roughike.bottombar.OnMenuTabClickListener;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
@@ -31,7 +26,7 @@ import java.util.List;
  */
 public class StoresActivity extends AppCompatActivity {
 
-    private BottomBar bottomBar;
+    private CustomBottomBar bottomBar;
     private CoordinatorLayout layout;
     private ProgressBar refreshPB;
     private WeakReference<RefreshStore> refreshStoreWeakReference;
@@ -45,31 +40,7 @@ public class StoresActivity extends AppCompatActivity {
         layout = (CoordinatorLayout) findViewById(R.id.store_tab);
         refreshPB = (ProgressBar) findViewById(R.id.progressBar);
 
-        bottomBar = BottomBar.attach(this, savedInstanceState);
-        bottomBar.setItems(R.menu.bottom_navagation);
-        bottomBar.setActiveTabColor(ContextCompat.getColor(this, R.color.colorBlue));
-        bottomBar.selectTabAtPosition(1, true);
-        bottomBar.setOnMenuTabClickListener(new OnMenuTabClickListener() {
-            @Override
-            public void onMenuTabSelected(@IdRes int itemId) {
-                switch (itemId) {
-                    case R.id.sale_item:
-                        Intent intent = new Intent(StoresActivity.this, SaleActivity.class);
-                        startActivity(intent);
-                        break;
-                    case R.id.store_item:
-                        break;
-                    case R.id.my_item:
-//                        Snackbar.make(layout, "Location Item Selected", Snackbar.LENGTH_LONG).show();
-                        break;
-                }
-            }
-
-            @Override
-            public void onMenuTabReSelected(@IdRes int menuItemId) {
-
-            }
-        });
+        bottomBar = new CustomBottomBar(1, this, savedInstanceState);
 
         productArrayAdapter = new ProductsListAdapter(this, android.R.layout.simple_list_item_1);
         ((ListView)findViewById(R.id.productStore)).setAdapter(productArrayAdapter);
@@ -78,7 +49,7 @@ public class StoresActivity extends AppCompatActivity {
     @Override
     protected void onResume() {
         super.onResume();
-        bottomBar.selectTabAtPosition(1, true);
+        bottomBar.selectTab();
         if (productArrayAdapter.getCount() == 0) {
             refreshStore();
         }
