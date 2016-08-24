@@ -67,6 +67,9 @@ public class LoginActivity extends AppCompatActivity {
         mProgressView = findViewById(R.id.login_progress);
     }
 
+    public void onBackPressed() {
+        finish();
+    }
 
     /**
      * Attempts to sign in or register the account specified by the login form.

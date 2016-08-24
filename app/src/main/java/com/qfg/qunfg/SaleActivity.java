@@ -13,8 +13,10 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.google.gson.Gson;
+import com.karics.library.zxing.android.CaptureActivity;
 import com.qfg.qunfg.pojo.Order;
 import com.qfg.qunfg.pojo.SaleItem;
 import com.qfg.qunfg.service.HttpService;
@@ -28,7 +30,8 @@ import java.lang.ref.WeakReference;
 
 public class SaleActivity extends AppCompatActivity {
 
-    private static int pick_sale_item = 1;
+    private static final int REQUEST_CODE_SCAN = 0;
+    private static final int PICK_SALE_ITEM = 1;
 
     private RecyclerView mRecyclerView;
     private KeyValueAdapter mAdapter;
@@ -108,6 +111,10 @@ public class SaleActivity extends AppCompatActivity {
         }
     }
 
+    public void onBackPressed() {
+        finish();
+    }
+
     @Override
     protected void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
@@ -117,26 +124,41 @@ public class SaleActivity extends AppCompatActivity {
         bottomBar.onSaveInstanceState(outState);
     }
 
-    public void OnAddSaleItem(View v) {
+    public void onScan(View view) {
+        Intent intent = new Intent(this, CaptureActivity.class);
+        startActivityForResult(intent, REQUEST_CODE_SCAN);
+    }
+
+    public void onAddSaleItem(View v) {
         Intent intent = new Intent(this, AddSaleItem.class);
-        startActivityForResult(intent, pick_sale_item);
+        startActivityForResult(intent, PICK_SALE_ITEM);
     }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == pick_sale_item) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                SaleItem saleItem = new SaleItem();
-                Bundle bundle = data.getBundleExtra(AddSaleItem.SALE_ITEM);
-                saleItem.setBarCode(bundle.getInt(AddSaleItem.SALE_ITEM_BARCODE))
-                        .setTitle(bundle.getString(AddSaleItem.SALE_ITEM_TITLE))
-                        .setUnitPrice(bundle.getInt(AddSaleItem.SALE_ITEM_UNIT_PRICE))
-                        .setCount(bundle.getInt(AddSaleItem.SALE_ITEM_AMOUNT));
-                SaleItemService.getInstance().add(saleItem);
+        if (requestCode == PICK_SALE_ITEM && resultCode == RESULT_OK) {
+            SaleItem saleItem = new SaleItem();
+            Bundle bundle = data.getBundleExtra(AddSaleItem.SALE_ITEM);
+            saleItem.setBarCode(bundle.getInt(AddSaleItem.SALE_ITEM_BARCODE))
+                    .setTitle(bundle.getString(AddSaleItem.SALE_ITEM_TITLE))
+                    .setUnitPrice(bundle.getInt(AddSaleItem.SALE_ITEM_UNIT_PRICE))
+                    .setCount(bundle.getInt(AddSaleItem.SALE_ITEM_AMOUNT));
+            SaleItemService.getInstance().add(saleItem);
+        } else if (requestCode == REQUEST_CODE_SCAN && resultCode == RESULT_OK) {
+                // 扫描二维码/条码回传
+                if (data != null) {
+                    String content = data.getStringExtra(CaptureActivity.CODED_CONTENT_KEY);
+                    int index = content.lastIndexOf('/');
+                    if (index <= 0) {
+                        Toast.makeText(this, "无效的二维码", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Intent intent = new Intent(this, AddSaleItem.class);
+                        intent.putExtra(AddSaleItem.QR_CODE, content.substring(index+1));
+                        startActivityForResult(intent, PICK_SALE_ITEM);
+                    }
+                }
             }
-        }
     }
 
     public void onSubmit(View view) {

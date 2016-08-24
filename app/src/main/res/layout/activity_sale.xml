@@ -70,13 +70,16 @@
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
-                android:text="@string/scanBarCode"/>
+                android:drawableLeft="@drawable/ic_barcode_scan"
+                android:text="@string/scanBarCode"
+                android:onClick="onScan"/>
             <Button
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_weight="1"
+                android:drawableLeft="@drawable/ic_edit"
                 android:text="@string/addSaleItem"
-                android:onClick="OnAddSaleItem"/>
+                android:onClick="onAddSaleItem"/>
         </android.support.v7.widget.ButtonBarLayout>
         <android.support.v7.widget.AppCompatTextView
             android:id="@+id/total_price"

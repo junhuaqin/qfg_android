@@ -27,6 +27,10 @@
     <string name="title_activity_login">登录</string>
     <string name="changePassword">修改密码</string>
     <string name="logout">退出当前用户</string>
+    <string name="button_ok">OK</string>
+    <string name="msg_camera_framework_bug">摄像头故障</string>
+    <string name="viewfinderview_status_text1">将二维码/条码放入取景框内</string>
+    <string name="viewfinderview_status_text2">即可自动扫描</string>
 
     <!-- Strings related to login -->
     <string name="prompt_username">用户名</string>

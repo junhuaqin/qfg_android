@@ -2,6 +2,7 @@ package com.qfg.qunfg;
 
 import android.app.Activity;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -16,11 +17,15 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.qfg.qunfg.pojo.Product;
+import com.qfg.qunfg.service.HttpService;
 import com.qfg.qunfg.service.ProductService;
 import com.qfg.qunfg.util.Constants;
 import com.qfg.qunfg.util.Formatter;
+import com.qfg.qunfg.util.Utils;
 
 import java.util.List;
 
@@ -29,6 +34,7 @@ import java.util.List;
  */
 public class AddSaleItem extends AppCompatActivity implements AdapterView.OnItemClickListener {
 
+    public static final String QR_CODE = "qr";
     public static final String SALE_ITEM = "saleItem";
     public static final String SALE_ITEM_BARCODE = "barCode";
     public static final String SALE_ITEM_TITLE = "title";
@@ -64,6 +70,16 @@ public class AddSaleItem extends AppCompatActivity implements AdapterView.OnItem
         productList.setOnItemClickListener(this);
 
         ProductService.getInstance().getAll(handler);
+
+        if (getIntent().hasExtra(QR_CODE)) {
+            String qr = getIntent().getStringExtra(QR_CODE);
+            if (!HttpService.isOnline(this)) {
+                Toast.makeText(getApplicationContext(), R.string.notConnectInternet, Toast.LENGTH_LONG)
+                        .show();
+            } else {
+                (new QueryByQR()).execute(qr);
+            }
+        }
     }
 
     private Handler handler = new Handler() {
@@ -164,6 +180,40 @@ public class AddSaleItem extends AppCompatActivity implements AdapterView.OnItem
             barCode.setText(String.format("%d", product.getBarCode()));
             title.setText(product.getTitle());
             unitPrice.setText(String.format("%.2f", Formatter.currency2fg(product.getUnitPrice())));
+        }
+    }
+
+    private class QueryByQR extends AsyncTask<String, Void, Message> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Message doInBackground(String... collections) {
+            Message msg = new Message();
+            try {
+                String content = HttpService.get("/products/qr/"+collections[0]);
+                msg.what = Constants.SUCCESS;
+                msg.obj = (new Gson()).fromJson(content, Product.class);
+            } catch (Exception e) {
+                e.printStackTrace();
+                msg.what = Constants.FAILED;
+                msg.obj = Utils.convertExceptionToString(e);
+            }
+
+            return msg;
+        }
+
+        @Override
+        protected void onPostExecute(Message s) {
+            super.onPostExecute(s);
+            if (Constants.SUCCESS == s.what) {
+                updateShow((Product)s.obj);
+            } else {
+                Toast.makeText(getApplicationContext(), (String)s.obj, Toast.LENGTH_LONG)
+                        .show();
+            }
         }
     }
 }
